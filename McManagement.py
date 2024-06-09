@@ -112,7 +112,7 @@ else:
 starttime = datetime.datetime.now()
 if args.silent:
     McExists = os.path.isdir(args.FolderPath)
-    if McExists == False:
+    if McExists == False or args.install:
         #print("Creating a directery for MC")
         os.makedirs(args.FolderPath)
         install_paper(MCV=McVersion, MCP=MCPath)
@@ -135,8 +135,10 @@ if args.silent:
         pass
     else:
         print("A problem occured.")
-    check_call(['java', '-Xms'+McMemory+'M', '-Xms'+McMemory+'M', MCPath],
-    stdout=open(os.devnull,'wb'), stderr=STDOUT)
+    #check_call(['java', '-Xms'+McMemory+'M', '-Xms'+McMemory+'M', MCPath],
+    #stdout=open(os.devnull,'wb'), stderr=STDOUT)
+    subprocess.run(["java", "-XMS"+McMemory+'M', "-XMS"+McMemory+'M', MCPath])
+
 
 else:
     logger.info(starttime)
