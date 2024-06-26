@@ -20,13 +20,25 @@ parser.add_argument("--reset-server-config", action="store_true",
                     help="Deletes the Server.properties.bak file and uses other arguments to build it again. This is non-destructive to the current Minecraft world b")
 parser.add_argument("--restart-interval", type=int,
                     help="Time between Server Restarts in Seconds. Will give a warning in chat 60 seconds before the restart is done.")
-parser.add_argument("--manual-configure", help="Opens a Nano session to the Server Settings including Host Port, Difficulty, and more. This is not automatic.",
+parser.add_argument("--accept-license", help="Accepts the Paper License. BY USING THIS YOU ARE ACCEPTING THE LICENSE OF PAPERMC.",
                     action="store_true")
 parser.add_argument("--install", help="Installs the required files to the specified directory.",
                     action="store_true")
-parser.add_argument("--reset-server", help="Deletes the specified directory and reinstalls the files. THIS IS DESTRUCTIVE!!!",
-                    action="store_true")
+#parser.add_argument("--reset-server", help="Deletes the specified directory and reinstalls the files. THIS IS DESTRUCTIVE!!!",
+#                    action="store_true")
 parser.add_argument("--docker", help="Installs Docker and runs the server inside that container.",
+                    action="store_true")
+#parser.add_argument("--no-docker-ssh", help="Disables SSH access to docker containers, thus blocking most access to the container. Not recommended but makes the container slightly more secure.",
+#                    action="store_true")
+#parser.add_argument("--docker-jupyter", help="Runs Jupyter inside each docker container",
+#                    action="store_true")
+#parser.add_argument("--docker-min-port", help="Bottom range of the ports that this will run on. Every port will be above this number. Don't make this below 1000 and DO NOT MAKE IT 65565.",
+#                    action="store_true")
+#parser.add_argument("--num-docker-containers", help="Number of Docker containers to run. Up to 100!",
+#                    action="store_true")
+#parser.add_argument("--docker-group-name", help="Name to label docker containers with. In docker, the name will be x+y x = this variable and y = the number of the specific container.",
+#                    action="store_true")
+parser.add_argument("--daemon", help="Runs the server as a Daemon. Runs on system start and is much more resistant to issues. Reccomended for single server use. NOT COMPATIBLE WITH --DOCKER!!!",
                     action="store_true")
 parser.add_argument("--mc-port", type=int,
                     help="The Port That Minecraft will run on, and the port that must be connected to for Minecraft. Only compatible with Docker. Useful for setting up multiple Minecraft servers on the same Machine IP.")
@@ -68,6 +80,17 @@ def install_paper(MCV, MCP):
         subprocess.run(["wget", "-O", MCP, "https://api.papermc.io/v2/projects/paper/versions/1.20.6/builds/134/downloads/paper-1.20.6-134.jar"])
     else:
         print('Unknown MC Version. Check your MC number.')
+if args.docker and args.daemon:
+    print("Error. Please choose either Docker or Daemon. Not both.")
+    exit()
+elif args.daemon:
+    #Run the Daemon...
+    print("You have found an unfinished piece of code. Sorry!")
+elif args.docker:
+    print("Installing Docker...")
+    subprocess.run(["apt", "install", "-y", "docker.io"])
+    print("Done!")
+    
 McMemory = args.mcmemory
 if McMemory is None:
     McMemory = 16000
@@ -137,6 +160,21 @@ if args.silent:
         print("A problem occured.")
     #check_call(['java', '-Xms'+McMemory+'M', '-Xms'+McMemory+'M', MCPath],
     #stdout=open(os.devnull,'wb'), stderr=STDOUT)
+    if args.acceptlicence:
+        #placeholder
+        pass
+    else:
+        manuallicenseaccept = input("DO YOU ACCEPT THE PAPERMC LICENSE? IT CAN BE FOUND AT WWW.PAPERMC.IO     [Y/N]")
+        if manuallicenseaccept == "Y" or "y" or "Yes" or "yes" or "YES":
+            print('License Accepted!')
+            #placeholder
+            pass
+        elif manuallicenseaccept == "N" or "No":
+            print('License must be accepted for Paper to run. Ending Program.')
+            quit()
+        else:
+            print('unkonwn input. Try again. with a different input.')
+            quit()
     subprocess.run(["java", "-XMS"+McMemory+'M', "-XMS"+McMemory+'M', MCPath])
 
 
@@ -146,7 +184,6 @@ if args.silent:
     pass
 else:
     logger.info('Checking for Existing Server files...')
-
 
 
 
