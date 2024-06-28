@@ -40,4 +40,32 @@ Community Cloud:
 COMMUNITY CLOUD WARNING!! - These machines are not neccicarily reliable and are not guarenteed to stay online. Make constant backups to ensure you will not lose anything if it does go down. Also, make sure to pay a fair price for a given machine. Too low of a price could prompt the host to start over on a new machine thus deleting your instance. Also, if you can prepay an instance, it tells the host that you want to keep the machine for a while. It will help with disincentivising hosts to go offline but it does take an upfromt commitment of cash. Datacenter Rated Machines are rarer and more expensive but would also help with these same issues.
 
 You could also run this on a community cloud service, such as Vast.ai. Vast provies very fair pricing on CPU and GPU machines that are generally equipped with lots of storage and memory. Pricing is by the gpu/machine plus storage plus internet bandwidth. Many machines have powerful CPU's with up to about 64 vCPU's per GPU. Good machines have variable memory amounts but at least 2 Gigabtes of memory per thread. Obviously a server such as this costs money, but if Minecraft only uses the CPU, then the GPU can be used to cover the hourly rental cost. Many servers could be run on these types of could machines, but since Vast runs on unprivelaged Docker Containers, the Docker Option cannot be used, so each server/daemon must be run manually. This is the most cost effective option to run lots of servers but also the least reliable. To recoup costs of the server, you could either cryptocurrency mine or find a use for it for yourself or someone else. Cryptocurrency mining will slightly increase the odds of a crash, so find a good machine before committing to it. I personally would run an AI text generation interface using a Meta Llama2 model and create the instance as jupyter and running a cryptocurrency mining software from there. Then you can use the GPU time as either a chatbot or as a revenue-generating source. The crypto market moves quickly so make sure to pick a reliable(ish) crypto and mine that. You are looking for long-term mining revenue. If you want to be more attentive to this instance, you could do your research and mine a coin that you think will go up in the future. This is difficult to do though. It is easier to mine a big-ish coin such as Conflux (CFX), RavenCoin (RVN), or Ethereum Classic (ETC). Many of these are only profitable on very certain GPU's, so find an instance with a GPU that works with the coin you are mining, a good CPU, and a good reliability score. Do your research on which machine is best! It could save you a lot of trouble if you find a good one.
-[Vast.ai Machines Page](www.cloud.vast.ai/search)
+- [Vast.ai Machines Page](www.cloud.vast.ai/search)
+How to set up a Vast.ai Instance:
+- GUI Method:
+
+1: Create an Account
+
+2: Add a few Credits. According to the TOS, Credits used for cryptocurrency mining must be purchased in crypto due to chargebacks from credit cards. If you are using this for mining to recover costs through mining, the credits must be purchased with crypto.
+
+3: Find a machine you like. If you want to risk it, you could find an `Unverified` Machine, but I would stick to `Verified` Machines.
+
+4: Select your Template. I will add a referral Link later.
+
+5: Once the instance is running, go to the `Instances` Page.
+
+6: Wait a few minutes for it to download, then go to Jupyter.
+
+7: Test the Machine. I will link a software for each CPU and GPU mining. Let it run for 10 minutes. If you encounter any issues, destroy the instance and try again with another.
+
+8: Make sure ports are opened. Inside the instance, run `nc -l -p 30000` Find the port corresponding to 30000 on your instance card, go to [portchecker](www.portchecker.co), enter the instance's IP, enter the corresponding port (It should look random), and click 'Check.' If it says 'Open' then go back to Jupyter. If it says 'Closed' check your Ip and port number and try again.
+
+9: Once you have found a reliable instance, Run your mining software of choice on the GPU and run this command in the Daemon Mode.
+
+10: Connect to your server. Make sure it is usable and running well. Use commands like `htop` and `nvidia-smi` to monitor CPU and GPU performance respectively.
+
+- CLI Method:
+
+1: Use the GUI Method
+
+2: You are done!
