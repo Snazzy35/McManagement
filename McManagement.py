@@ -201,13 +201,13 @@ if args.silent:
     #check_call(['java', '-Xms'+McMemory+'M', '-Xms'+McMemory+'M', MCPath],
     #stdout=open(os.devnull,'wb'), stderr=STDOUT)
     if args.acceptlicence:
-        #placeholder
+        subprocess.run(['echo', "'eula=true'", ">", MCPath+"/eula"])
         pass
     else:
         manuallicenseaccept = input("DO YOU ACCEPT THE PAPERMC LICENSE? IT CAN BE FOUND AT WWW.PAPERMC.IO     [Y/N]")
         if manuallicenseaccept == "Y" or "y" or "Yes" or "yes" or "YES":
             print('License Accepted!')
-            #placeholder
+            subprocess.run(['echo', "'eula=true'", ">", MCPath+"/eula"])
             pass
         elif manuallicenseaccept == "N" or "No":
             print('License must be accepted for Paper to run. Ending Program.')
