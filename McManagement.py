@@ -12,6 +12,8 @@ parser.add_argument("-v", "--verbose", help="increase output verbosity",
                     action="store_true")
 parser.add_argument("-s", "--silent", help="Do not write any logs and execute all tasks in the background. Will still display errors in the terminal",
                     action="store_true")
+parser.add_argument("--folderpath", type=str, help="The path to where existing MC files can be found or where new files should be put. Ex. /var/lib/mc")
+parser.add_argument("--mc-version", type=int, help="The Version of Minecraft to Run or Install. Only latest releases. Must be in subversion form eg. 16 instead of 1.16.")
 parser.add_argument("--mcmemory", type=int,
                     help="The Amount of memory in Megabytes (MB) that is allocated to Java. Default is 16000.")
 parser.add_argument("--mc-difficulty", type=int,
@@ -32,20 +34,20 @@ parser.add_argument("--docker", help="Installs Docker and runs the server inside
 #                    action="store_true")
 #parser.add_argument("--docker-jupyter", help="Runs Jupyter inside each docker container",
 #                    action="store_true")
-#parser.add_argument("--docker-min-port", help="Bottom range of the ports that this will run on. Every port will be above this number. Don't make this below 1000 and DO NOT MAKE IT 65565.",
-#                    action="store_true")
-#parser.add_argument("--num-docker-containers", help="Number of Docker containers to run. Up to 100!",
-#                    action="store_true")
-#parser.add_argument("--docker-group-name", help="Name to label docker containers with. In docker, the name will be x+y x = this variable and y = the number of the specific container.",
-#                    action="store_true")
+parser.add_argument("--docker-min-port", help="Bottom range of the ports that this will run on. Every port will be above this number. Don't make this below 1000 and DO NOT MAKE IT 65565.",
+                    type=int)
+parser.add_argument("--num-docker-containers", help="Number of Docker containers to run. Don't go crazy with this number!",
+                    type=int)
+parser.add_argument("--docker-group-name", help="Name to label docker containers with. In docker, the name will be x+y x = this variable and y = the number of the specific container.",
+                    type=str)
 parser.add_argument("--daemon", help="Runs the server as a Daemon. Runs on system start and is much more resistant to issues. Reccomended for single server use. NOT COMPATIBLE WITH --DOCKER!!!",
                     action="store_true")
 parser.add_argument("--mc-port", type=int,
                     help="The Port That Minecraft will run on, and the port that must be connected to for Minecraft. Only compatible with Docker. Useful for setting up multiple Minecraft servers on the same Machine IP.")
 parser.add_argument("--windows", help="Displays instructions on how to install WSL.",
                     action="store_true")
-parser.add_argument("FolderPath", help="The path to where existing MC files can be found or where new files should be put. Ex. /var/lib/mc")
-parser.add_argument("Mc_Version", type=int, help="The Version of Minecraft to Run or Install. Only latest releases. Must be in subversion form eg. 16 instead of 1.16.")
+parser.add_argument("--docker-auto-install", help="NOT FOR MANUAL USE!!! REQUIRES MANY OTHER SPECIFIC VARIABLES THAT ARE NOT CHECKED FOR! ONLY RUN AUTOMATICALLY!",
+                    action="store_true")
 args = parser.parse_args()
 if args.docs:
     print('find the docs here: https://github.com/Snazzy35/McManagement/blob/main/README.md')
@@ -89,7 +91,45 @@ elif args.daemon:
 elif args.docker:
     print("Installing Docker...")
     subprocess.run(["apt", "install", "-y", "docker.io"])
-    print("Done!")
+    #Portconfig!
+    dockerminport = args.docker_min_port
+    dockercontainers = args.num_docker_containers
+    if args.no_docker_ssh and args.jupyter:
+        minsshport = 0
+        minmcport = dockerminport
+        minjupyterport = dockerminport + dockercontainers
+        totalports = 2*dockercontainers
+        print("Port(s)"+dockerminport+"to"+dockerminport+dockercontainers-1+"are your MC Port(s). These Must be forwarded. Port(s)"+minjupyterport+"to"+minjupyterport+dockercontainers-1+"are your Jupyter port(s). Remember you have no SSH so Jupyter is the best connection to the container! Remember those port(s).")
+        print("You are using"+totalports+"Ports!")
+        print("Success!")
+    elif args.no_docker_ssh:
+        minsshport = 0
+        minmcport = dockerminport
+        totalports = dockercontainers
+        print("Port(s)"+dockerminport+"to"+dockerminport+dockercontainers-1+"are your MC Port(s). These Must be forwarded.")
+        print("You are using"+totalports+"Ports!")
+        print("Success!")
+    elif args.docker_jupyer:
+        minsshport = dockerminport
+        minmcport = dockerminport + dockercontainers
+        minjupyterport = minmcport + dockercontainers
+        totalports = 3*dockercontainers
+        print("Ports"+minsshport+"to"+minsshport+dockercontainers-1+"are your SSH Ports. DO NOT FORWARD THESE!!! NEVER! Remember them for ssh access to specific containers. Port(s)"+minmcport+"to"+minmcport+dockercontainers-1+"are your MC Port(s). These Must be forwarded. Port(s)"+minjupyterport+"to"+minjupyterport+dockercontainers+"are your Jupyter port(s). Remember those port(s).")
+        print("You are using"+totalports+"Ports!")
+        print("Success!")
+    else:
+        print("default config.")
+        minsshport = dockerminport
+        minmcport = minsshport + dockercontainers
+        totalports = 2*dockercontainers
+        print("Ports"+minsshport+"to"+minsshport+dockercontainers-1+"are your SSH Ports. DO NOT FORWARD THESE!!! NEVER! Remember them for ssh access to specific containers. Port(s)"+minmcport+"to"+minmcport+dockercontainers-1+"are your MC Port(s). These Must be forwarded.")
+        print("You are using"+dockercontainers+"Ports!")
+        print("Success!")
+print("Building Docker Create Command...")
+print("ToDo Later Sorry")
+    
+    #subprocess.run(["sudo", "docker", "run", "-it", "ubuntu:latest", "-p", "22:"])
+    #print("Done!")
     
 McMemory = args.mcmemory
 if McMemory is None:
