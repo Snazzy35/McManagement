@@ -139,10 +139,10 @@ elif McMemory > 0 and McMemory <100:
     McMemory = McMemory * 1000
 else:
     pass
-FolderPath = args.FolderPath
+FolderPath = args.folderpath
 MCPath = str(FolderPath) + "/java"
-print(args.Mc_Version)
-McVersion = args.Mc_Version
+print(args.mc_version)
+McVersion = args.mc_version
 if McVersion < 12 and McVersion > 7:
     javaversion = 8
 elif McVersion < 16 and McVersion > 11:
@@ -173,16 +173,20 @@ else:
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
 starttime = datetime.datetime.now()
-if args.silent:
-    McExists = os.path.isdir(args.FolderPath)
+if True or False:
+    McExists = os.path.isdir(args.folderpath)
     if McExists == False or args.install:
         #print("Creating a directery for MC")
-        os.makedirs(args.FolderPath)
+        os.makedirs(args.folderpath)
+        os.chdir(args.folderpath)
         install_paper(MCV=McVersion, MCP=MCPath)
+        print("Adding Java Repositories...")
         check_call(['sudo', 'add-apt-repository', 'ppa:linuxuprising/java', '-y'],
         stdout=open(os.devnull,'wb'), stderr=STDOUT)
+        print("Running Apt Update...")
         check_call(['sudo', 'apt', 'update', '-y'],
         stdout=open(os.devnull,'wb'), stderr=STDOUT)
+        print("Installing Java...")
         if javaversion == 8:
             check_call(['apt', 'install', '-y', 'openjdk-8-jdk'],
             stdout=open(os.devnull,'wb'), stderr=STDOUT)
@@ -200,22 +204,29 @@ if args.silent:
         print("A problem occured.")
     #check_call(['java', '-Xms'+McMemory+'M', '-Xms'+McMemory+'M', MCPath],
     #stdout=open(os.devnull,'wb'), stderr=STDOUT)
-    if args.acceptlicence:
-        subprocess.run(['echo', "'eula=true'", ">", MCPath+"/eula"])
+    if args.accept_license:
+        subprocess.run(['rm', FolderPath+"/eula.txt"])
+        f = open("eula.txt", "a")
+        f.write("eula=true")
+        f.close()
         pass
     else:
-        manuallicenseaccept = input("DO YOU ACCEPT THE PAPERMC LICENSE? IT CAN BE FOUND AT WWW.PAPERMC.IO     [Y/N]")
+        manuallicenseaccept = input("DO YOU ACCEPT THE PAPERMC LICENSE? IT CAN BE FOUND AT https://www.minecraft.net/en-us/eula (Paper also requires it to be said that by agreeing to this EULA, you agree that tacos are tasty.)     [Y/CTRL+C]")
+        print(manuallicenseaccept)
         if manuallicenseaccept == "Y" or "y" or "Yes" or "yes" or "YES":
             print('License Accepted!')
-            subprocess.run(['echo', "'eula=true'", ">", MCPath+"/eula"])
+            subprocess.run(['rm', FolderPath+"/eula"])
+            f = open("eula.txt", "a")
+            f.write("eula=true")
+            f.close()
             pass
         elif manuallicenseaccept == "N" or "No":
-            print('License must be accepted for Paper to run. Ending Program.')
-            quit()
+            print('License must be accepted for Paper to run.')
         else:
             print('unkonwn input. Try again. with a different input.')
             quit()
-    subprocess.run(["java", "-XMS"+McMemory+'M', "-XMS"+McMemory+'M', MCPath])
+    mcmemorystr = str(McMemory)
+    subprocess.run(["java", "-Xms"+mcmemorystr+'M', "-Xmx"+mcmemorystr+'M', "-jar", MCPath])
 
 
 else:
